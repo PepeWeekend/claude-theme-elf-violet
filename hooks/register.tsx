@@ -89,17 +89,22 @@ const mode = atom({ plugin: 'elf-violet', key: 'mode' } as const, null as ElfMod
 const LOOK: ThemeSetArgs = { colors: theme, backdrop: { scene: 'elf-violet' } }
 
 export const register: Register = on => {
+  let isDrawn = false
+
   on('session.start', async ($, e, next) => {
     const unpainted = problems.find(line => line.startsWith("Desktop won't paint"))
 
     if (unpainted !== undefined) {
       $.ui.toast(unpainted)
     }
-    const set = await $.theme.set(LOOK)
+    isDrawn = (await $.theme.set(LOOK)).isDrawn
 
-    if (!set.isDrawn) {
-      $.ui.status(set.reason)
-    }
+    return next(e)
+  })
+
+  // デスクトップが後からつながったときに、テーマを掛け直す。
+  on('session.attach', async ($, e, next) => {
+    isDrawn = (await $.theme.set(LOOK)).isDrawn
 
     return next(e)
   })
@@ -131,6 +136,9 @@ export const register: Register = on => {
 
   // 作業中は入力欄の上に、大きめのキャラとひとこと。
   on('turn.start', async ($, e, next) => {
+    if (!isDrawn) {
+      isDrawn = (await $.theme.set(LOOK)).isDrawn
+    }
     if (e.agentId === undefined) {
       await update($, mode, () => 'thinking')
     }
