@@ -1,5 +1,5 @@
 // ちびキャラの顔（作業中の行に出す）。黒ウルフ髪、紫インナー、尖り耳、紫縁メガネ、半目。
-export const MASCOT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+export const MASCOT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 10 60 48" width="60" height="48">
 <style>
 .bob { animation: bob 3.2s ease-in-out infinite; transform-origin: 32px 40px; }
 .lid { animation: blink 5s infinite; transform-origin: 32px 33px; }
@@ -8,8 +8,9 @@ export const MASCOT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 6
 </style>
 <g class="bob">
 <!-- back hair -->
-<path d="M14 30 Q12 50 18 56 L22 48 L24 56 L30 50 L34 56 L40 50 L42 56 L46 48 L48 56 Q54 48 50 30 Z" fill="#1a181d"/>
-<path d="M44 34 Q50 44 47 55 L43 47 Z" fill="#7b5cc4"/>
+<path d="M14 30 Q12 50 18 56 L22 48 L24 56 L30 50 L34 56 L40 50 L42 56 L46 48 L48 56 Q54 48 50 30 Z" fill="#2b2733" stroke="#6a58a0" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M43 32 Q51 44 47 56 L42 47 Z" fill="#8b6cd8"/>
+<path d="M21 32 Q14 44 18 54 L22 46 Z" fill="#8b6cd8"/>
 <!-- ears -->
 <path d="M15 33 L3 24 L16 39 Z" fill="#f2d9cc" stroke="#d8b8a8" stroke-width="0.8"/>
 <path d="M49 33 L61 24 L48 39 Z" fill="#f2d9cc" stroke="#d8b8a8" stroke-width="0.8"/>
@@ -34,7 +35,7 @@ export const MASCOT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 6
 <!-- mouth -->
 <path d="M30 44 L34 44" stroke="#b0727a" stroke-width="1" stroke-linecap="round"/>
 <!-- front hair, heavy bangs -->
-<path d="M14 32 Q12 14 32 12 Q52 14 50 32 L46 26 L44 34 L40 25 L36 33 L33 24 L29 33 L26 25 L22 34 L20 27 Z" fill="#1a181d"/>
+<path d="M14 32 Q12 14 32 12 Q52 14 50 32 L46 26 L44 34 L40 25 L36 33 L33 24 L29 33 L26 25 L22 34 L20 27 Z" fill="#2b2733" stroke="#6a58a0" stroke-width="1.2" stroke-linejoin="round"/>
 <path d="M18 20 Q22 15 27 14" stroke="#3a3542" stroke-width="1" fill="none"/>
 </g>
 </svg>`

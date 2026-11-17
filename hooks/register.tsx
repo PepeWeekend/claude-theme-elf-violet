@@ -1,5 +1,7 @@
+import { atom, read, update } from 'claude-code'
 import type { Register, ThemeSetArgs } from 'claude-code'
 
+import type { ElfMode } from '../types'
 import { makeColors } from './make-colors.js'
 import { MASCOT, pick } from './mascot'
 
@@ -78,6 +80,8 @@ const SCENE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" p
 </g>
 </svg>`
 
+const mode = atom({ plugin: 'elf-violet', key: 'mode' } as const, null as ElfMode)
+
 const LOOK: ThemeSetArgs = { colors: theme, backdrop: { scene: 'elf-violet' } }
 
 export const register: Register = on => {
@@ -115,8 +119,49 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="row" alignItems="center" gap={1}>
-        <Svg source={MASCOT} alt="エルフの先輩" width={36} height={36} isInteractive />
+        <Svg source={MASCOT} alt="エルフの先輩" width={30} height={24} isInteractive />
         <Text color="accent">{line}</Text>
+      </Box>
+    )
+  })
+
+  // 作業中は入力欄の上に、大きめのキャラとひとこと。
+  on('turn.start', async ($, e, next) => {
+    if (e.agentId === undefined) {
+      await update($, mode, () => 'thinking')
+    }
+
+    return next(e)
+  })
+
+  on('tool.call', async ($, e, next) => {
+    if (e.agentId === undefined) {
+      await update($, mode, () => 'tool-use')
+    }
+
+    return next(e)
+  }).catch(($, e, next) => next(e))
+
+  on('turn.complete', async ($, e, next) => {
+    if (e.agentId === undefined) {
+      await update($, mode, () => null)
+    }
+
+    return next(e)
+  })
+
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+    const now = await read($, mode)
+
+    if (e.surface !== 'desktop' || e.props.hasSurvey || now === null) {
+      return next(e)
+    }
+    const { Box, Svg, Text } = $.ui.resolve(e)
+
+    return (
+      <Box flexDirection="row" alignItems="center" gap={2}>
+        <Svg source={MASCOT} alt="エルフの先輩" width={90} height={72} isInteractive />
+        <Text color="accent">{pick(now, now)}</Text>
       </Box>
     )
   })
