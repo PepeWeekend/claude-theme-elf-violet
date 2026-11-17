@@ -1,0 +1,123 @@
+import type { Register, ThemeSetArgs } from 'claude-code'
+
+import { makeColors } from './make-colors.js'
+import { MASCOT, pick } from './mascot'
+
+// 黒髪・紫インナーカラーのエルフ。ダークはジャケットの黒、ライトは白シャツ。
+const { theme, problems } = makeColors({
+  label: 'Elf Violet',
+  roles: { accent: '#7b5cc4', danger: '#8e2238', success: '#4f8a6a', warning: '#b5852a', pro: '#a98be0' },
+  light: {
+    gray: {
+      anchors: {
+        'surface-0': '#ebe8f0',
+        'surface-1': '#f3f1f6',
+        'surface-2': '#fbfafc',
+        'text-primary': '#1c1a21',
+        'text-secondary': '#45404f',
+        'text-muted': '#5d5767',
+      },
+    },
+  },
+  dark: {
+    gray: {
+      anchors: {
+        'surface-0': '#141317',
+        'surface-1': '#1b1a1f',
+        'surface-2': '#222027',
+        'surface-3': '#29262f',
+        'text-primary': '#efeaf6',
+        'text-secondary': '#cbc3d8',
+        'text-muted': '#a69eb3',
+      },
+    },
+  },
+})
+
+// ジャケットの紫ライン、ネクタイのワインレッド、ゆっくり漂う紫の光。
+const SCENE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+<style>
+.bg { fill: #ebe8f0; }
+.line { stroke: #7b5cc4; }
+.soft { stroke: #c9b3ec; }
+.tie { stroke: #7a2236; }
+.mote { fill: #7b5cc4; }
+@media (prefers-color-scheme: dark) {
+  .bg { fill: #141317; }
+  .soft { stroke: #4a3d6b; }
+  .mote { fill: #c9b3ec; }
+}
+.glow { animation: breathe 9s ease-in-out infinite; }
+.m1 { animation: drift 22s ease-in-out infinite; }
+.m2 { animation: drift 28s ease-in-out infinite reverse; }
+.m3 { animation: drift 34s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.9; } }
+@keyframes drift { 0%, 100% { transform: translate(0px, 0px); } 50% { transform: translate(18px, -26px); } }
+</style>
+<rect class="bg" x="0" y="0" width="1600" height="1000"/>
+<!-- upper left trim -->
+<g class="glow" fill="none" stroke-linecap="round">
+<path class="soft" d="M -40 250 L 300 -40" stroke-width="14" opacity="0.5"/>
+<path class="line" d="M -40 300 L 360 -40" stroke-width="3"/>
+<path class="line" d="M -40 330 L 390 -40" stroke-width="1.5" opacity="0.6"/>
+</g>
+<!-- lower right trim and tie -->
+<g class="glow" fill="none" stroke-linecap="round">
+<path class="soft" d="M 1250 1040 L 1640 700" stroke-width="14" opacity="0.5"/>
+<path class="line" d="M 1200 1040 L 1640 660" stroke-width="3"/>
+<path class="line" d="M 1170 1040 L 1640 630" stroke-width="1.5" opacity="0.6"/>
+<path class="tie" d="M 1320 1040 L 1640 760" stroke-width="5" opacity="0.7"/>
+</g>
+<!-- motes -->
+<g opacity="0.35">
+<circle class="mote m1" cx="180" cy="420" r="3"/>
+<circle class="mote m2" cx="1420" cy="260" r="2.5"/>
+<circle class="mote m3" cx="1480" cy="520" r="2"/>
+<circle class="mote m2" cx="110" cy="760" r="2"/>
+<circle class="mote m1" cx="1340" cy="140" r="3"/>
+</g>
+</svg>`
+
+const LOOK: ThemeSetArgs = { colors: theme, backdrop: { scene: 'elf-violet' } }
+
+export const register: Register = on => {
+  on('session.start', async ($, e, next) => {
+    const unpainted = problems.find(line => line.startsWith("Desktop won't paint"))
+
+    if (unpainted !== undefined) {
+      $.ui.toast(unpainted)
+    }
+    const set = await $.theme.set(LOOK)
+
+    if (!set.isDrawn) {
+      $.ui.status(set.reason)
+    }
+
+    return next(e)
+  })
+
+  on('ui.render', { component: 'Backdrop' }, ($, e, next) => {
+    if (e.surface !== 'desktop' && e.surface !== 'mobile') {
+      return next(e)
+    }
+    const { Svg } = $.ui.resolve(e)
+
+    return <Svg source={SCENE} alt="紫のジャケットラインとワインレッドのネクタイ、漂う紫の光" isInteractive />
+  })
+
+  // 作業中の行に、キャラの顔とひとこと。
+  on('ui.render', { component: 'Spinner' }, ($, e, next) => {
+    if (e.surface !== 'desktop') {
+      return next(e)
+    }
+    const { Box, Svg, Text } = $.ui.resolve(e)
+    const line = e.props.message ?? pick(e.props.mode, e.props.word)
+
+    return (
+      <Box flexDirection="row" alignItems="center" gap={1}>
+        <Svg source={MASCOT} alt="エルフの先輩" width={36} height={36} isInteractive />
+        <Text color="accent">{line}</Text>
+      </Box>
+    )
+  })
+}

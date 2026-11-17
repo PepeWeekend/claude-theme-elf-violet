@@ -1,0 +1,5 @@
+{
+  "name": "claude-theme-elf-violet",
+  "owner": { "name": "PepeWeekend" },
+  "plugins": [{ "name": "elf-violet", "source": "./" }]
+}
