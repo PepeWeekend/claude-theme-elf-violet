@@ -4,6 +4,7 @@ import type { Register, ThemeSetArgs } from 'claude-code'
 import type { ElfMode } from '../types'
 import { makeColors } from './make-colors.js'
 import { MASCOT, pick } from './mascot'
+import { STANDING } from './standing'
 
 // 黒髪・紫インナーカラーのエルフ。ダークはジャケットの黒、ライトは白シャツ。
 const { theme, problems } = makeColors({
@@ -37,7 +38,7 @@ const { theme, problems } = makeColors({
 })
 
 // ジャケットの紫ライン、ネクタイのワインレッド、ゆっくり漂う紫の光。
-const SCENE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+const SCENE = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
 <style>
 .bg { fill: #ebe8f0; }
 .line { stroke: #7b5cc4; }
@@ -56,7 +57,8 @@ const SCENE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" p
 @keyframes breathe { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.9; } }
 @keyframes drift { 0%, 100% { transform: translate(0px, 0px); } 50% { transform: translate(18px, -26px); } }
 </style>
-<rect class="bg" x="0" y="0" width="1600" height="1000"/>
+<rect class="bg" x="0" y="0" width="100%" height="100%"/>
+<svg x="0" y="0" width="100%" height="100%" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
 <!-- upper left trim -->
 <g class="glow" fill="none" stroke-linecap="round">
 <path class="soft" d="M -40 250 L 300 -40" stroke-width="14" opacity="0.5"/>
@@ -78,6 +80,8 @@ const SCENE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" p
 <circle class="mote m2" cx="110" cy="760" r="2"/>
 <circle class="mote m1" cx="1340" cy="140" r="3"/>
 </g>
+</svg>
+${STANDING}
 </svg>`
 
 const mode = atom({ plugin: 'elf-violet', key: 'mode' } as const, null as ElfMode)
@@ -106,7 +110,7 @@ export const register: Register = on => {
     }
     const { Svg } = $.ui.resolve(e)
 
-    return <Svg source={SCENE} alt="紫のジャケットラインとワインレッドのネクタイ、漂う紫の光" isInteractive />
+    return <Svg source={SCENE} alt="右下に立つエルフの先輩と、紫のジャケットライン、漂う紫の光" isInteractive />
   })
 
   // 作業中の行に、キャラの顔とひとこと。
