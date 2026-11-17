@@ -1,6 +1,6 @@
 # elf-violet
 
-A Claude desktop theme inspired by an original VRChat avatar: a black-haired elf with violet inner color, violet-rimmed glasses, a black jacket with violet piping and a wine-red tie. Dark charcoal and lavender-white surfaces, violet accent, wine-red for errors, a slow backdrop of violet trim lines, and a small chibi face with a sleepy, sharp-tongued line on the working row of the desktop app.
+A Claude desktop theme inspired by an original VRChat avatar: a black-haired elf with violet inner color, violet-rimmed glasses, a black jacket with violet piping and a wine-red tie. Dark charcoal and lavender-white surfaces, violet accent, wine-red for errors, and a slow backdrop of violet trim lines.
 
 ## Install
 

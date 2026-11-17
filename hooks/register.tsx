@@ -1,10 +1,6 @@
-import { atom, read, update } from 'claude-code'
 import type { Register, ThemeSetArgs } from 'claude-code'
 
-import type { ElfMode } from '../types'
 import { makeColors } from './make-colors.js'
-import { MASCOT, pick } from './mascot'
-import { STANDING } from './standing'
 
 // 黒髪・紫インナーカラーのエルフ。ダークはジャケットの黒、ライトは白シャツ。
 const { theme, problems } = makeColors({
@@ -81,10 +77,7 @@ const SCENE = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%
 <circle class="mote m1" cx="1340" cy="140" r="3"/>
 </g>
 </svg>
-${STANDING}
 </svg>`
-
-const mode = atom({ plugin: 'elf-violet', key: 'mode' } as const, null as ElfMode)
 
 const LOOK: ThemeSetArgs = { colors: theme, backdrop: { scene: 'elf-violet' } }
 
@@ -115,66 +108,15 @@ export const register: Register = on => {
     }
     const { Svg } = $.ui.resolve(e)
 
-    return <Svg source={SCENE} alt="右下に立つエルフの先輩と、紫のジャケットライン、漂う紫の光" isInteractive />
+    return <Svg source={SCENE} alt="紫のジャケットラインとワインレッドのネクタイ、漂う紫の光" isInteractive />
   })
 
-  // 作業中の行に、キャラの顔とひとこと。
-  on('ui.render', { component: 'Spinner' }, ($, e, next) => {
-    if (e.surface !== 'desktop') {
-      return next(e)
-    }
-    const { Box, Svg, Text } = $.ui.resolve(e)
-    const line = e.props.message ?? pick(e.props.mode, e.props.word)
-
-    return (
-      <Box flexDirection="row" alignItems="center" gap={1}>
-        <Svg source={MASCOT} alt="エルフの先輩" width={30} height={24} isInteractive />
-        <Text color="accent">{line}</Text>
-      </Box>
-    )
-  })
-
-  // 作業中は入力欄の上に、大きめのキャラとひとこと。
+  // つながる前に掛け損ねていたら、話しかけたときに掛け直す。
   on('turn.start', async ($, e, next) => {
     if (!isDrawn) {
       isDrawn = (await $.theme.set(LOOK)).isDrawn
     }
-    if (e.agentId === undefined) {
-      await update($, mode, () => 'thinking')
-    }
 
     return next(e)
-  })
-
-  on('tool.call', async ($, e, next) => {
-    if (e.agentId === undefined) {
-      await update($, mode, () => 'tool-use')
-    }
-
-    return next(e)
-  }).catch(($, e, next) => next(e))
-
-  on('turn.complete', async ($, e, next) => {
-    if (e.agentId === undefined) {
-      await update($, mode, () => null)
-    }
-
-    return next(e)
-  })
-
-  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    const now = await read($, mode)
-
-    if (e.surface !== 'desktop' || e.props.hasSurvey || now === null) {
-      return next(e)
-    }
-    const { Box, Svg, Text } = $.ui.resolve(e)
-
-    return (
-      <Box flexDirection="row" alignItems="center" gap={2}>
-        <Svg source={MASCOT} alt="エルフの先輩" width={90} height={72} isInteractive />
-        <Text color="accent">{pick(now, now)}</Text>
-      </Box>
-    )
   })
 }
